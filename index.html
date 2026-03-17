@@ -25,10 +25,32 @@
             max-width: 560px;
             width: 100%;
         }
-        h1 {
-            font-size: 24px;
-            color: #1a1a2e;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 8px;
+        }
+        h1 { font-size: 24px; color: #1a1a2e; }
+        .lang-toggle {
+            display: flex;
+            border: 2px solid #e4e7ec;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .lang-btn {
+            padding: 6px 12px;
+            border: none;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #667085;
+            transition: all 0.2s;
+        }
+        .lang-btn.active {
+            background: #4a6cf7;
+            color: white;
         }
         .subtitle {
             color: #666;
@@ -54,20 +76,11 @@
             color: #98a2b3;
             margin-bottom: 12px;
         }
-        .drop-zone p {
-            color: #475467;
-            font-size: 15px;
-        }
-        .drop-zone .hint {
-            color: #98a2b3;
-            font-size: 13px;
-            margin-top: 4px;
-        }
+        .drop-zone p { color: #475467; font-size: 15px; }
+        .drop-zone .hint { color: #98a2b3; font-size: 13px; margin-top: 4px; }
         input[type="file"] { display: none; }
 
-        .quality-section {
-            margin-top: 24px;
-        }
+        .quality-section { margin-top: 24px; }
         .quality-section label {
             font-size: 14px;
             font-weight: 600;
@@ -75,10 +88,7 @@
             display: block;
             margin-bottom: 8px;
         }
-        .quality-options {
-            display: flex;
-            gap: 8px;
-        }
+        .quality-options { display: flex; gap: 8px; }
         .quality-btn {
             flex: 1;
             padding: 10px;
@@ -101,6 +111,51 @@
         .quality-btn .q-label { font-weight: 600; display: block; }
         .quality-btn .q-desc { font-size: 11px; color: #98a2b3; margin-top: 2px; display: block; }
         .quality-btn.active .q-desc { color: #7b93f7; }
+
+        .size-limit-section { margin-top: 20px; }
+        .size-limit-section label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #344054;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .size-inputs {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .size-input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .size-input-group span {
+            font-size: 12px;
+            color: #667085;
+        }
+        .size-input-group input {
+            padding: 8px 12px;
+            border: 2px solid #e4e7ec;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .size-input-group input:focus { border-color: #4a6cf7; }
+        .size-hint {
+            font-size: 12px;
+            color: #98a2b3;
+            margin-top: 6px;
+        }
+        .size-error {
+            font-size: 12px;
+            color: #b42318;
+            margin-top: 6px;
+            display: none;
+        }
 
         .file-info {
             margin-top: 24px;
@@ -141,10 +196,7 @@
             cursor: not-allowed;
         }
 
-        .progress {
-            margin-top: 20px;
-            display: none;
-        }
+        .progress { margin-top: 20px; display: none; }
         .progress-bar-bg {
             height: 8px;
             background: #e4e7ec;
@@ -173,14 +225,8 @@
             display: none;
             text-align: center;
         }
-        .result.error {
-            background: #fef3f2;
-        }
-        .result h3 {
-            color: #067647;
-            font-size: 16px;
-            margin-bottom: 8px;
-        }
+        .result.error { background: #fef3f2; }
+        .result h3 { color: #067647; font-size: 16px; margin-bottom: 8px; }
         .result.error h3 { color: #b42318; }
         .result .stats {
             color: #475467;
@@ -205,34 +251,56 @@
 </head>
 <body>
     <div class="container">
-        <h1>PDF Compressor</h1>
-        <p class="subtitle">Upload a PDF and compress it. Everything runs in your browser — no files are uploaded to any server.</p>
+        <div class="header">
+            <h1 id="title">PDF Compressor</h1>
+            <div class="lang-toggle">
+                <button class="lang-btn active" onclick="setLang('en')">EN</button>
+                <button class="lang-btn" onclick="setLang('el')">GR</button>
+            </div>
+        </div>
+        <p class="subtitle" id="subtitle">Upload a PDF and compress it. Everything runs in your browser — no files are uploaded to any server.</p>
 
         <div class="drop-zone" id="dropZone">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
             </svg>
-            <p>Drop your PDF here or click to browse</p>
-            <p class="hint">Max 100MB</p>
+            <p id="dropText">Drop your PDF here or click to browse</p>
+            <p class="hint" id="dropHint">Max 100MB</p>
         </div>
         <input type="file" id="fileInput" accept=".pdf,application/pdf">
 
         <div class="quality-section">
-            <label>Compression Quality</label>
+            <label id="qualityLabel">Compression Quality</label>
             <div class="quality-options">
                 <button class="quality-btn" data-quality="low" onclick="setQuality('low')">
-                    <span class="q-label">Maximum</span>
-                    <span class="q-desc">Smallest file</span>
+                    <span class="q-label" id="qLowLabel">Maximum</span>
+                    <span class="q-desc" id="qLowDesc">Smallest file</span>
                 </button>
                 <button class="quality-btn active" data-quality="medium" onclick="setQuality('medium')">
-                    <span class="q-label">Balanced</span>
-                    <span class="q-desc">Good quality</span>
+                    <span class="q-label" id="qMedLabel">Balanced</span>
+                    <span class="q-desc" id="qMedDesc">Good quality</span>
                 </button>
                 <button class="quality-btn" data-quality="high" onclick="setQuality('high')">
-                    <span class="q-label">Light</span>
-                    <span class="q-desc">Best quality</span>
+                    <span class="q-label" id="qHighLabel">Light</span>
+                    <span class="q-desc" id="qHighDesc">Best quality</span>
                 </button>
             </div>
+        </div>
+
+        <div class="size-limit-section">
+            <label id="sizeLimitLabel">Target File Size (MB)</label>
+            <div class="size-inputs">
+                <div class="size-input-group">
+                    <span id="minLabel">Minimum</span>
+                    <input type="number" id="minMB" min="0" step="0.5" placeholder="0">
+                </div>
+                <div class="size-input-group">
+                    <span id="maxLabel">Maximum</span>
+                    <input type="number" id="maxMB" min="0.5" step="0.5" placeholder="4">
+                </div>
+            </div>
+            <p class="size-hint" id="sizeHint">Leave empty for automatic compression. Set max to target a specific file size.</p>
+            <p class="size-error" id="sizeError"></p>
         </div>
 
         <div class="file-info" id="fileInfo">
@@ -257,13 +325,112 @@
     </div>
 
     <script>
-        // Configure pdf.js worker
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         let selectedFile = null;
         let compressedBlob = null;
         let compressedFileName = '';
         let quality = 'medium';
+        let lang = 'en';
+
+        // --- Translations ---
+        const t = {
+            en: {
+                title: 'PDF Compressor',
+                subtitle: 'Upload a PDF and compress it. Everything runs in your browser — no files are uploaded to any server.',
+                dropText: 'Drop your PDF here or click to browse',
+                dropHint: 'Max 100MB',
+                qualityLabel: 'Compression Quality',
+                qLowLabel: 'Maximum', qLowDesc: 'Smallest file',
+                qMedLabel: 'Balanced', qMedDesc: 'Good quality',
+                qHighLabel: 'Light', qHighDesc: 'Best quality',
+                sizeLimitLabel: 'Target File Size (MB)',
+                minLabel: 'Minimum', maxLabel: 'Maximum',
+                sizeHint: 'Leave empty for automatic compression. Set max to target a specific file size.',
+                compressBtn: 'Compress PDF',
+                compressing: 'Compressing...',
+                preparing: 'Preparing...',
+                loading: 'Loading PDF...',
+                compressingPage: (i, n) => `Compressing page ${i} of ${n}...`,
+                finalizing: 'Finalizing...',
+                adjusting: (attempt, max) => `Result too large, adjusting quality (attempt ${attempt})...`,
+                tooSmall: (attempt, max) => `Result too small, adjusting quality up (attempt ${attempt})...`,
+                done: 'Done!',
+                resultTitle: 'Compression Complete!',
+                original: 'Original',
+                compressed: 'Compressed',
+                saved: 'Saved',
+                download: 'Download Compressed PDF',
+                alreadyOptimized: 'File is already well-optimized. Try a higher compression level.',
+                failedTitle: 'Compression Failed',
+                alertPdf: 'Please select a PDF file.',
+                errorMinMax: 'Minimum must be less than maximum.',
+                errorTooSmall: 'Could not compress below the maximum target without losing too much quality.',
+                errorBelowMin: 'Compressed file is below minimum target. Try a lighter compression.',
+                aboveMax: 'Note: Could not reach target maximum. Try "Maximum" compression.',
+                belowMin: 'Note: File is below minimum target.',
+            },
+            el: {
+                title: 'Συμπίεση PDF',
+                subtitle: 'Ανεβάστε ένα PDF και συμπιέστε το. Όλα γίνονται στον browser σας — κανένα αρχείο δεν ανεβαίνει σε server.',
+                dropText: 'Σύρετε το PDF εδώ ή κάντε κλικ για αναζήτηση',
+                dropHint: 'Μέγ. 100MB',
+                qualityLabel: 'Ποιότητα Συμπίεσης',
+                qLowLabel: 'Μέγιστη', qLowDesc: 'Μικρότερο αρχείο',
+                qMedLabel: 'Ισορροπημένη', qMedDesc: 'Καλή ποιότητα',
+                qHighLabel: 'Ελαφριά', qHighDesc: 'Καλύτερη ποιότητα',
+                sizeLimitLabel: 'Στόχος Μεγέθους Αρχείου (MB)',
+                minLabel: 'Ελάχιστο', maxLabel: 'Μέγιστο',
+                sizeHint: 'Αφήστε κενό για αυτόματη συμπίεση. Ορίστε μέγιστο για στοχευμένο μέγεθος.',
+                compressBtn: 'Συμπίεση PDF',
+                compressing: 'Συμπίεση...',
+                preparing: 'Προετοιμασία...',
+                loading: 'Φόρτωση PDF...',
+                compressingPage: (i, n) => `Συμπίεση σελίδας ${i} από ${n}...`,
+                finalizing: 'Ολοκλήρωση...',
+                adjusting: (attempt, max) => `Αποτέλεσμα πολύ μεγάλο, ρύθμιση ποιότητας (προσπάθεια ${attempt})...`,
+                tooSmall: (attempt, max) => `Αποτέλεσμα πολύ μικρό, αύξηση ποιότητας (προσπάθεια ${attempt})...`,
+                done: 'Ολοκληρώθηκε!',
+                resultTitle: 'Η Συμπίεση Ολοκληρώθηκε!',
+                original: 'Αρχικό',
+                compressed: 'Συμπιεσμένο',
+                saved: 'Εξοικονόμηση',
+                download: 'Λήψη Συμπιεσμένου PDF',
+                alreadyOptimized: 'Το αρχείο είναι ήδη βελτιστοποιημένο. Δοκιμάστε μεγαλύτερη συμπίεση.',
+                failedTitle: 'Η Συμπίεση Απέτυχε',
+                alertPdf: 'Παρακαλώ επιλέξτε αρχείο PDF.',
+                errorMinMax: 'Το ελάχιστο πρέπει να είναι μικρότερο από το μέγιστο.',
+                errorTooSmall: 'Δεν ήταν δυνατή η συμπίεση κάτω από το μέγιστο στόχο χωρίς μεγάλη απώλεια ποιότητας.',
+                errorBelowMin: 'Το συμπιεσμένο αρχείο είναι κάτω από τον ελάχιστο στόχο. Δοκιμάστε ελαφρύτερη συμπίεση.',
+                aboveMax: 'Σημείωση: Δεν επιτεύχθηκε ο στόχος. Δοκιμάστε "Μέγιστη" συμπίεση.',
+                belowMin: 'Σημείωση: Το αρχείο είναι κάτω από τον ελάχιστο στόχο.',
+            }
+        };
+
+        function setLang(l) {
+            lang = l;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.lang-btn[onclick="setLang('${l}')"]`).classList.add('active');
+            // Update all text
+            document.getElementById('title').textContent = t[l].title;
+            document.getElementById('subtitle').textContent = t[l].subtitle;
+            document.getElementById('dropText').textContent = t[l].dropText;
+            document.getElementById('dropHint').textContent = t[l].dropHint;
+            document.getElementById('qualityLabel').textContent = t[l].qualityLabel;
+            document.getElementById('qLowLabel').textContent = t[l].qLowLabel;
+            document.getElementById('qLowDesc').textContent = t[l].qLowDesc;
+            document.getElementById('qMedLabel').textContent = t[l].qMedLabel;
+            document.getElementById('qMedDesc').textContent = t[l].qMedDesc;
+            document.getElementById('qHighLabel').textContent = t[l].qHighLabel;
+            document.getElementById('qHighDesc').textContent = t[l].qHighDesc;
+            document.getElementById('sizeLimitLabel').textContent = t[l].sizeLimitLabel;
+            document.getElementById('minLabel').textContent = t[l].minLabel;
+            document.getElementById('maxLabel').textContent = t[l].maxLabel;
+            document.getElementById('sizeHint').textContent = t[l].sizeHint;
+            document.getElementById('compressBtn').textContent = t[l].compressBtn;
+            document.getElementById('downloadBtn').textContent = t[l].download;
+            document.title = t[l].title;
+        }
 
         const qualitySettings = {
             low:    { scale: 0.5,  jpegQuality: 0.35 },
@@ -286,7 +453,6 @@
         // Drop zone
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
-
         dropZone.addEventListener('click', () => fileInput.click());
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
         dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
@@ -299,7 +465,7 @@
 
         function handleFile(file) {
             if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-                alert('Please select a PDF file.');
+                alert(t[lang].alertPdf);
                 return;
             }
             selectedFile = file;
@@ -310,8 +476,53 @@
             document.getElementById('result').style.display = 'none';
         }
 
+        async function renderPdf(arrayBuffer, scale, jpegQuality) {
+            const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer.slice(0) }).promise;
+            const totalPages = pdfDoc.numPages;
+            const newPdf = await PDFLib.PDFDocument.create();
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pct = 10 + Math.round((i / totalPages) * 80);
+                progressBar.style.width = pct + '%';
+                progressText.textContent = t[lang].compressingPage(i, totalPages);
+
+                const page = await pdfDoc.getPage(i);
+                const viewport = page.getViewport({ scale: scale * 2 });
+
+                const canvas = document.createElement('canvas');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                const ctx = canvas.getContext('2d');
+                await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+                const jpegDataUrl = canvas.toDataURL('image/jpeg', jpegQuality);
+                const jpegBytes = Uint8Array.from(atob(jpegDataUrl.split(',')[1]), c => c.charCodeAt(0));
+
+                const img = await newPdf.embedJpg(jpegBytes);
+                const origViewport = page.getViewport({ scale: 1 });
+                const newPage = newPdf.addPage([origViewport.width, origViewport.height]);
+                newPage.drawImage(img, { x: 0, y: 0, width: origViewport.width, height: origViewport.height });
+            }
+
+            const compressedBytes = await newPdf.save();
+            return new Blob([compressedBytes], { type: 'application/pdf' });
+        }
+
         async function compressPDF() {
             if (!selectedFile) return;
+
+            const minMB = parseFloat(document.getElementById('minMB').value) || 0;
+            const maxMB = parseFloat(document.getElementById('maxMB').value) || 0;
+            const sizeError = document.getElementById('sizeError');
+            sizeError.style.display = 'none';
+
+            if (minMB && maxMB && minMB >= maxMB) {
+                sizeError.textContent = t[lang].errorMinMax;
+                sizeError.style.display = 'block';
+                return;
+            }
 
             const btn = document.getElementById('compressBtn');
             const progress = document.getElementById('progress');
@@ -320,99 +531,96 @@
             const result = document.getElementById('result');
 
             btn.disabled = true;
-            btn.textContent = 'Compressing...';
+            btn.textContent = t[lang].compressing;
             progress.style.display = 'block';
             result.style.display = 'none';
             progressBar.style.width = '0%';
 
             try {
                 const arrayBuffer = await selectedFile.arrayBuffer();
-                progressText.textContent = 'Loading PDF...';
+                progressText.textContent = t[lang].loading;
                 progressBar.style.width = '10%';
 
                 const settings = qualitySettings[quality];
+                let currentScale = settings.scale;
+                let currentJpeg = settings.jpegQuality;
+                let blob = await renderPdf(arrayBuffer, currentScale, currentJpeg);
 
-                // Load with pdf.js for rendering
-                const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-                const totalPages = pdfDoc.numPages;
+                // If max target set, iteratively adjust
+                if (maxMB > 0) {
+                    const maxBytes = maxMB * 1048576;
+                    const minBytes = minMB * 1048576;
+                    let attempts = 0;
+                    const maxAttempts = 5;
 
-                // Create new PDF with pdf-lib
-                const newPdf = await PDFLib.PDFDocument.create();
+                    while (blob.size > maxBytes && attempts < maxAttempts) {
+                        attempts++;
+                        progressText.textContent = t[lang].adjusting(attempts, maxAttempts);
+                        // Reduce quality proportionally
+                        const ratio = maxBytes / blob.size;
+                        currentScale = Math.max(0.3, currentScale * Math.sqrt(ratio));
+                        currentJpeg = Math.max(0.1, currentJpeg * ratio);
+                        blob = await renderPdf(arrayBuffer, currentScale, currentJpeg);
+                    }
 
-                for (let i = 1; i <= totalPages; i++) {
-                    const pct = 10 + Math.round((i / totalPages) * 80);
-                    progressBar.style.width = pct + '%';
-                    progressText.textContent = `Compressing page ${i} of ${totalPages}...`;
-
-                    const page = await pdfDoc.getPage(i);
-                    const viewport = page.getViewport({ scale: settings.scale * 2 }); // 2x for resolution
-
-                    // Render to canvas
-                    const canvas = document.createElement('canvas');
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
-                    const ctx = canvas.getContext('2d');
-
-                    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-
-                    // Convert to JPEG
-                    const jpegDataUrl = canvas.toDataURL('image/jpeg', settings.jpegQuality);
-                    const jpegBytes = Uint8Array.from(atob(jpegDataUrl.split(',')[1]), c => c.charCodeAt(0));
-
-                    // Embed in new PDF
-                    const img = await newPdf.embedJpg(jpegBytes);
-
-                    // Use original page dimensions (in points)
-                    const origViewport = page.getViewport({ scale: 1 });
-                    const newPage = newPdf.addPage([origViewport.width, origViewport.height]);
-                    newPage.drawImage(img, {
-                        x: 0,
-                        y: 0,
-                        width: origViewport.width,
-                        height: origViewport.height,
-                    });
+                    // If min target set and file is too small, increase quality
+                    if (minBytes > 0) {
+                        attempts = 0;
+                        while (blob.size < minBytes && attempts < maxAttempts) {
+                            attempts++;
+                            progressText.textContent = t[lang].tooSmall(attempts, maxAttempts);
+                            const ratio = minBytes / blob.size;
+                            currentScale = Math.min(1.5, currentScale * Math.sqrt(ratio));
+                            currentJpeg = Math.min(0.95, currentJpeg * Math.sqrt(ratio));
+                            blob = await renderPdf(arrayBuffer, currentScale, currentJpeg);
+                        }
+                    }
                 }
 
-                progressBar.style.width = '95%';
-                progressText.textContent = 'Finalizing...';
-
-                const compressedBytes = await newPdf.save();
-                compressedBlob = new Blob([compressedBytes], { type: 'application/pdf' });
-
+                compressedBlob = blob;
                 const nameParts = selectedFile.name.replace(/\.pdf$/i, '');
                 compressedFileName = nameParts + '_compressed.pdf';
 
                 progressBar.style.width = '100%';
-                progressText.textContent = 'Done!';
+                progressText.textContent = t[lang].done;
 
                 const saved = selectedFile.size - compressedBlob.size;
                 const pctSaved = ((saved / selectedFile.size) * 100).toFixed(0);
 
                 result.className = 'result';
                 result.style.display = 'block';
-                document.getElementById('resultTitle').textContent = 'Compression Complete!';
+                document.getElementById('resultTitle').textContent = t[lang].resultTitle;
                 document.getElementById('resultStats').innerHTML =
-                    `Original: <strong>${formatSize(selectedFile.size)}</strong><br>` +
-                    `Compressed: <strong>${formatSize(compressedBlob.size)}</strong><br>` +
-                    `Saved: <strong>${formatSize(saved)} (${pctSaved}%)</strong>`;
+                    `${t[lang].original}: <strong>${formatSize(selectedFile.size)}</strong><br>` +
+                    `${t[lang].compressed}: <strong>${formatSize(compressedBlob.size)}</strong><br>` +
+                    `${t[lang].saved}: <strong>${formatSize(saved)} (${pctSaved}%)</strong>`;
                 document.getElementById('downloadBtn').style.display = 'inline-block';
 
+                // Warnings
                 if (compressedBlob.size >= selectedFile.size) {
                     document.getElementById('resultStats').innerHTML +=
-                        '<br><em style="color:#b42318;">File is already well-optimized. Try a higher compression level.</em>';
+                        `<br><em style="color:#b42318;">${t[lang].alreadyOptimized}</em>`;
+                }
+                if (maxMB > 0 && compressedBlob.size > maxMB * 1048576) {
+                    document.getElementById('resultStats').innerHTML +=
+                        `<br><em style="color:#b45309;">${t[lang].aboveMax}</em>`;
+                }
+                if (minMB > 0 && compressedBlob.size < minMB * 1048576) {
+                    document.getElementById('resultStats').innerHTML +=
+                        `<br><em style="color:#b45309;">${t[lang].belowMin}</em>`;
                 }
 
             } catch (err) {
                 result.className = 'result error';
                 result.style.display = 'block';
-                document.getElementById('resultTitle').textContent = 'Compression Failed';
+                document.getElementById('resultTitle').textContent = t[lang].failedTitle;
                 document.getElementById('resultStats').textContent = err.message;
                 document.getElementById('downloadBtn').style.display = 'none';
                 console.error(err);
             }
 
             btn.disabled = false;
-            btn.textContent = 'Compress PDF';
+            btn.textContent = t[lang].compressBtn;
             setTimeout(() => { progress.style.display = 'none'; }, 1500);
         }
 

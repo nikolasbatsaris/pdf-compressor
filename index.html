@@ -365,6 +365,9 @@
                 failedTitle: 'Compression Failed',
                 alertPdf: 'Please select a PDF file.',
                 errorMinMax: 'Minimum must be less than maximum.',
+                errorMaxTooLow: (min) => `Maximum must be at least ${min} MB. You can't compress a PDF that small without destroying it.`,
+                errorMinNegative: 'Values must be positive numbers.',
+                errorMaxAboveOriginal: 'Maximum is larger than the original file — no compression needed.',
                 errorTooSmall: 'Could not compress below the maximum target without losing too much quality.',
                 errorBelowMin: 'Compressed file is below minimum target. Try a lighter compression.',
                 aboveMax: 'Note: Could not reach target maximum. Try "Maximum" compression.',
@@ -400,6 +403,9 @@
                 failedTitle: 'Η Συμπίεση Απέτυχε',
                 alertPdf: 'Παρακαλώ επιλέξτε αρχείο PDF.',
                 errorMinMax: 'Το ελάχιστο πρέπει να είναι μικρότερο από το μέγιστο.',
+                errorMaxTooLow: (min) => `Το μέγιστο πρέπει να είναι τουλάχιστον ${min} MB. Δεν γίνεται τόση συμπίεση χωρίς καταστροφή ποιότητας.`,
+                errorMinNegative: 'Οι τιμές πρέπει να είναι θετικοί αριθμοί.',
+                errorMaxAboveOriginal: 'Το μέγιστο είναι μεγαλύτερο από το αρχικό αρχείο — δεν χρειάζεται συμπίεση.',
                 errorTooSmall: 'Δεν ήταν δυνατή η συμπίεση κάτω από το μέγιστο στόχο χωρίς μεγάλη απώλεια ποιότητας.',
                 errorBelowMin: 'Το συμπιεσμένο αρχείο είναι κάτω από τον ελάχιστο στόχο. Δοκιμάστε ελαφρύτερη συμπίεση.',
                 aboveMax: 'Σημείωση: Δεν επιτεύχθηκε ο στόχος. Δοκιμάστε "Μέγιστη" συμπίεση.',
@@ -518,8 +524,34 @@
             const sizeError = document.getElementById('sizeError');
             sizeError.style.display = 'none';
 
+            const fileSizeMB = selectedFile.size / 1048576;
+            // Absolute minimum: 0.5 MB or 5% of original, whichever is larger
+            const absoluteMinMB = Math.max(0.5, Math.round(fileSizeMB * 0.05 * 10) / 10);
+
+            // Validate negative values
+            if (minMB < 0 || maxMB < 0) {
+                sizeError.textContent = t[lang].errorMinNegative;
+                sizeError.style.display = 'block';
+                return;
+            }
+
+            // Validate min >= max
             if (minMB && maxMB && minMB >= maxMB) {
                 sizeError.textContent = t[lang].errorMinMax;
+                sizeError.style.display = 'block';
+                return;
+            }
+
+            // Validate max is not unrealistically low
+            if (maxMB > 0 && maxMB < absoluteMinMB) {
+                sizeError.textContent = t[lang].errorMaxTooLow(absoluteMinMB);
+                sizeError.style.display = 'block';
+                return;
+            }
+
+            // Validate max is not above original
+            if (maxMB > 0 && maxMB >= fileSizeMB) {
+                sizeError.textContent = t[lang].errorMaxAboveOriginal;
                 sizeError.style.display = 'block';
                 return;
             }
